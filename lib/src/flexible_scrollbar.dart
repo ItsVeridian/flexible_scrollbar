@@ -471,12 +471,7 @@ class _FlexibleScrollbarState extends State<FlexibleScrollbar> {
           isScrollable = false;
         }
         if (barOffset > 0) {
-          final double scrollOffset = widget.controller.offset;
-          final double mainAxisSize =
-              isVertical ? childHeightByKey! : childWidthByKey!;
-          barOffset = mainAxisSize /
-              (viewMaxScrollExtent! + mainAxisSize) *
-              scrollOffset;
+          barOffset = getBarAbsolute(widget.controller.offset);
         }
         if (!scrollFieldsInitialised) {
           scrollFieldsInitialised = true;
@@ -491,8 +486,7 @@ class _FlexibleScrollbarState extends State<FlexibleScrollbar> {
     }
     if (notification is ScrollUpdateNotification) {
       setState(() {
-        final barDelta = getBarDelta(notification.scrollDelta!);
-        barOffset += barDelta;
+        barOffset = getBarAbsolute(notification.metrics.pixels);
 
         viewOffset += notification.scrollDelta!;
         if (viewOffset < widget.controller.position.minScrollExtent) {
@@ -506,8 +500,8 @@ class _FlexibleScrollbarState extends State<FlexibleScrollbar> {
     return true;
   }
 
-  double getBarDelta(double scrollViewDelta) {
-    return scrollViewDelta * barMaxScrollExtent! / viewMaxScrollExtent!;
+  double getBarAbsolute(double pixels) {
+    return pixels * barMaxScrollExtent! / viewMaxScrollExtent!;
   }
 
   void onDragStart(DragStartDetails details) {
